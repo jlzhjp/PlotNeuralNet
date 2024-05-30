@@ -1,0 +1,438 @@
+
+\documentclass[border=8pt, multi, tikz]{standalone}
+\usepackage{import}
+\subimport{../layers/}{init}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d} %for including external image
+
+\definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{applegreen}{rgb}{0.55, 0.71, 0.0}
+\definecolor{amethyst}{rgb}{0.6, 0.4, 0.8}
+\definecolor{amaranth}{rgb}{0.9, 0.17, 0.31}
+\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}
+\definecolor{aqua}{rgb}{0.0, 1.0, 1.0}
+\definecolor{babypink}{rgb}{0.96, 0.76, 0.76}
+
+
+\def\ConvColor{airforceblue}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{applegreen}
+\def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+\def\FcColor{aqua}
+\def\FcReluColor{aqua}
+\def\SoftmaxColor{babypink}
+\def\SumColor{rgb:blue,5;green,15}
+
+\def\ReluColor{amaranth}
+\def\BatchNormColor{atomictangerine}
+\def\DropoutColor{amethyst}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+
+\begin{document}
+\begin{tikzpicture}
+
+\tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+\tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+\pic[shift={(0,0,0)}] at (0,0,0)
+    {Box={
+        name=conv1,
+        caption=Conv1,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ConvColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+    \pic[shift={(0,0,0)}] at (conv1-east)
+    {Box={
+        name=bn1,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+    \pic[shift={(0,0,0)}] at (bn1-east)
+    {Box={
+        name=relu1,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+
+
+    \pic[shift={(1,0,0)}] at (relu1-east)
+    {Box={
+        name=conv2,
+        caption=Conv2,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ConvColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+    \draw [connection]  (relu1-east)    -- node {\midarrow} (conv2-west);
+
+    \pic[shift={(0,0,0)}] at (conv2-east)
+    {Box={
+        name=bn2,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+    \pic[shift={(0,0,0)}] at (bn2-east)
+    {Box={
+        name=relu2,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        height=32,
+        width=1,
+        depth=32
+        }
+    };
+
+    \pic[shift={ (1,0,0) }] at (relu2-east)
+    {Box={
+        name=pool1,
+        caption=Pool1,
+        fill=\PoolColor,
+        opacity=0.5,
+        height=16,
+        width=1,
+        depth=16
+        }
+    };
+
+    \draw [connection]  (relu2-east)    -- node {\midarrow} (pool1-west);
+
+    \pic[shift={ (0,0,0) }] at (pool1-east)
+    {Box={
+        name=dropout1,
+        caption= ,
+        fill=\DropoutColor,
+        opacity=0.5,
+        height=16,
+        width=1,
+        depth=16
+        }
+    };
+
+    \pic[shift={ (1,0,0) }] at (dropout1-east)
+    {Box={
+        name=conv3,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ConvColor,
+        height=16,
+        width=2,
+        depth=16
+        }
+    };
+
+
+    \pic[shift={(0,0,0)}] at (conv3-east)
+    {Box={
+        name=bn3,
+        caption=Conv3,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        height=16,
+        width=2,
+        depth=16
+        }
+    };
+
+    \draw [connection]  (dropout1-east)    -- node {\midarrow} (conv3-west);
+
+    \pic[shift={(0,0,0)}] at (bn3-east)
+    {Box={
+        name=relu3,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        height=16,
+        width=1,
+        depth=16
+        }
+    };
+    \pic[shift={ (1,0,0) }] at (relu3-east)
+    {Box={
+        name=conv4,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ConvColor,
+        height=16,
+        width=4,
+        depth=16
+        }
+    };
+    \pic[shift={(0,0,0)}] at (conv4-east)
+    {Box={
+        name=bn4,
+        caption=Conv4,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        height=16,
+        width=4,
+        depth=16
+        }
+    };
+
+    \draw [connection]  (relu3-east)    -- node {\midarrow} (conv4-west);
+
+    \pic[shift={(0,0,0)}] at (bn4-east)
+    {Box={
+        name=relu4,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        height=16,
+        width=1,
+        depth=16
+        }
+    };
+
+
+    \pic[shift={ (1,0,0) }] at (relu4-east)
+    {Box={
+        name=pool2,
+        caption=Pool2,
+        fill=\PoolColor,
+        opacity=0.5,
+        height=8,
+        width=1,
+        depth=8
+        }
+    };
+
+    \draw [connection]  (relu4-east)    -- node {\midarrow} (pool2-west);
+
+    \pic[shift={ (0,0,0) }] at (pool2-east)
+    {Box={
+        name=dropout2,
+        caption= ,
+        fill=\DropoutColor,
+        opacity=0.5,
+        height=8,
+        width=1,
+        depth=8
+        }
+    };
+
+
+\pic[shift={(3,0,0)}] at (pool2-east)
+    {Box={
+        name=fc1,
+        caption=FC1,
+        xlabel={{,}},
+        zlabel=,
+        fill=\FcColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=64
+        }
+    };
+    \pic[shift={(0,0,0)}] at (fc1-east)
+    {Box={
+        name=bn5,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=64
+        }
+    };
+
+    \draw [connection]  (pool2-east)    -- node {\midarrow} (fc1-west);
+
+    \pic[shift={(0,0,0)}] at (bn5-east)
+    {Box={
+        name=relu5,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=64
+        }
+    };
+    \pic[shift={(0,0,0)}] at (relu5-east)
+    {Box={
+        name=dropout3,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\DropoutColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=64
+        }
+    };
+
+    \pic[shift={(1,0,0)}] at (dropout3-east)
+    {Box={
+        name=fc2,
+        caption=FC2,
+        xlabel={{,}},
+        zlabel=,
+        fill=\FcColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=32
+        }
+    };
+
+    \draw [connection]  (dropout3-east)    -- node {\midarrow} (fc2-west);
+
+    \pic[shift={(0,0,0)}] at (fc2-east)
+    {Box={
+        name=bn6,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=32
+        }
+    };
+
+    \pic[shift={(0,0,0)}] at (bn6-east)
+    {Box={
+        name=relu6,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=32
+        }
+    };
+    \pic[shift={(0,0,0)}] at (relu6-east)
+    {Box={
+        name=dropout4,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\DropoutColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=32
+        }
+    };
+
+    \pic[shift={(1,0,0)}] at (dropout4-east)
+    {Box={
+        name=fc3,
+        caption=FC3,
+        xlabel={{,}},
+        zlabel=,
+        fill=\FcColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=16
+        }
+    };
+
+    \draw [connection]  (dropout4-east)    -- node {\midarrow} (fc3-west);
+
+    \pic[shift={(0,0,0)}] at (fc3-east)
+    {Box={
+        name=bn7,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\BatchNormColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=16
+        }
+    };
+    \pic[shift={(0,0,0)}] at (bn7-east)
+    {Box={
+        name=relu7,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\ReluColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=16
+        }
+    };
+    \pic[shift={(0,0,0)}] at (relu7-east)
+    {Box={
+        name=dropout5,
+        caption=,
+        xlabel={{,}},
+        zlabel=,
+        fill=\DropoutColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=16
+        }
+    };
+
+    \pic[shift={(1,0,0)}] at (dropout5-east)
+    {Box={
+        name=softmax,
+        caption=Softmax,
+        xlabel={{,}},
+        zlabel=,
+        fill=\SoftmaxColor,
+        opacity=0.5,
+        height=3,
+        width=1,
+        depth=16
+        }
+    };
+
+    \draw [connection]  (dropout5-east)    -- node {\midarrow} (softmax-west);
+
+
+\end{tikzpicture}
+\end{document}
